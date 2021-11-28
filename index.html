@@ -1,0 +1,89 @@
+<html lang="en">
+	<head>
+		<title>Retailer Makeup SDK - First Steps</title>
+		<script src="./sdk.js"></script>
+	</head>
+	<body>
+        <span id="loadingText">Please wait a few seconds for the live stream to appear</span>
+
+<!-- This div will be where the VTO will appear once ready, the code below will add the Canvas returned by the engine as a child of this div -->
+<div id="container" style="height: 250px"></div>
+<script>
+	// This config object is passed to the VTO object ;to initialize the engine upon start
+	// See comments below this code sample to get more details on each entry
+	let config = {
+		'config': {
+			'moduleMode': 'Makeup',
+			'libraryInfo': {
+				'domain': 'localhost',
+				'path': 'C:/Users/raj.patil/Desktop/Modiface/',
+				'version': '',
+				'maskPrefix': 'C:/Users/raj.patil/Desktop/Modiface/mask_images/',
+				'assetPrefix': 'C:/Users/raj.patil/Desktop/Modiface/dist/assets/'
+			} 
+		}
+	};
+
+	
+	// The VTO engine needs a unique id for each instance initiated
+	// The value can be any string but it must be unique within the page
+	let instanceId = 'LIVE_1';
+	 let myLookObject = [{
+	 	category: 'lipcolor',
+		color_a: 200,
+	 	color_r: 198,
+	 	color_g: 255,
+	 	color_b: 111,
+	 	intensity: 0.8,
+	 	placement: 'default'
+	 }];
+
+	async function applyMakeupToCamera(){
+			
+	
+		await window.MFE_VTO.init(config);
+		
+		// We call startLiveMode to initiate the live mode using the video camera
+		await window.MFE_VTO.startLiveMode();
+		
+		let canvasWrapper = await window.MFE_VTO.setLiveLook({ 
+						lookId: instanceId, 
+						lookObject: myLookObject 
+					});
+		
+		// If we reach this part the VTO successfully found the face and applied the makeup
+		// We can hide the loading text, and shows the Canvas on the page
+		document.getElementById("loadingText").style.display = 'none';
+		document.getElementById("container").appendChild(canvasWrapper.renderedCanvas);
+		canvasWrapper.renderedCanvas.style.height = "100%";
+	}
+	// We call our method to initiate the VTO upon page load
+	// This could be defered through a button click, or Promise resolve
+	//applyMakeupToCamera();
+	
+// import { imgObj } from './preloadImage.js';
+
+// imgObj.enforceLibraryLoad = true;
+//  window.MFE_VTO.init ({
+// 	config: {
+//  	// populate below with your config
+//  	libraryInfo: {
+//  		maskPrefix,
+//  		assetPrefix,
+//  		domain, 
+//  		path, 
+//  		version,
+//  	},
+//  	moduleMode: 'Makeup', 
+//  	},
+//   }).then(() => { 
+//   //preload makeup sdk with a dummy photo
+//  	window.MFE_VTO.startPhotoMode(imgObj);
+//   });
+
+</script>
+	
+<button onclick="applyMakeupToCamera()">Try It On</button>
+	</body>
+
+</html>
